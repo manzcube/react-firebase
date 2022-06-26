@@ -1,72 +1,71 @@
-
+// React
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
+
+// Firebase
 import { signOut, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
+
+// Toast
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
+// Routes components
 import Home from './pages/Home'
 import AddEmployee from './pages/AddEmployee'
 import EditEmployee from './pages/EditEmployee'
 import Loading from "./pages/Loading";
+import NotFound from "./pages/NotFound";
 
 function App() {
   // Pieces of state and hooks.
   const [user, setUser] = useState(null)
   const navigate = useNavigate()
 
-  // Handle Login function.
   const handleLogIn = () => {
     // Create new Google Auth provider.
-    const provider = new GoogleAuthProvider();
-
+    const provider = new GoogleAuthProvider();    
     // Calling firebase function function.
     signInWithPopup(auth, provider) 
       .then((result) => {
         // The signed-in user info.
-        const user = result.user;
-
+        const { user } = result;
         // Update pieces of state.
         setUser(user.displayName)
-
         // Notify the user with toast.
-        toast.success(`Successfully logged in ${user.email}`, {
+        toast.success(`Successfully logged in! ${user.email}` , {
           autoClose: 5000,
-        })
-
+          pauseOnHover: false
+        }) 
       }).catch((error) => {
         // Taking code and message from error.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
+        const { code, message } = error
         // Notify the user with toast.
-        toast.error(`Error!, code: ${errorCode, errorMessage}`, {
-          autoClose: 10000,
+        toast.error(`Error!, ${code, message}` , {
+          autoClose: 5000,
+          pauseOnHover: false
         })
       });
   }
 
-  // Handle Logout function.
   const handleLogOut = () => {
     // Calling firebase function.
     signOut(auth)
       .then(() => {
         // Update pieces of state.
         setUser(null)
-
-        // Notify the user with toast.    
-        toast.success('Successfully logged out!', {
+        // Notify the user with toast. 
+        toast.success('Successfully logged out!' , {
           autoClose: 5000,
-        })
+          pauseOnHover: false
+        }) 
       }).catch((error) => {
-        // Taking code and message from error
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
-        // Notify the user with toast
-        toast.error(`Error!, code: ${errorCode, errorMessage}`, {
-          autoClose: 10000,
+        // Taking code and message from error.
+        const { code, message } = error
+        // Notify the user with toast.
+        toast.error(`Error!, ${code, message}` , {
+          autoClose: 5000,
+          pauseOnHover: false
         })
       });
   }
@@ -80,7 +79,7 @@ function App() {
   }, [auth])
 
   return (
-    <div className="App bg-slate-800 p-4 h-full">
+    <div className="App bg-slate-800 p-4">
       <header className="App-header flex justify-between">
         <h1 className='text-white text-3xl font-bold cursor-pointer' onClick={() => navigate('/')}>Employees</h1>
         <div>
@@ -104,13 +103,15 @@ function App() {
               Log In
             </button>
           )}
-          <ToastContainer />
+          <ToastContainer className='mt-16' />
         </div>
       </header>
       <Routes>
         <Route path='/' element={user ? <Home /> : <Loading />} />
         <Route path='/add' element={user ? <AddEmployee /> : <Loading />} />
         <Route path='/edit/:id' element={user ? <EditEmployee /> : <Loading />} />
+        <Route path='/loda' element={<Loading />} />
+        <Route path='/*' element={<NotFound />} />
       </Routes>
     </div>
   );
