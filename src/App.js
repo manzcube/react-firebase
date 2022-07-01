@@ -10,12 +10,15 @@ import { auth } from "./firebase";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-// Routes components
+// Routes pages
 import Home from './pages/Home'
 import AddEmployee from './pages/AddEmployee'
 import EditEmployee from './pages/EditEmployee'
 import Loading from "./pages/Loading";
 import NotFound from "./pages/NotFound";
+
+// Error boundaires
+import { handleError } from "./errors/errorHandling";
 
 function App() {
   // Pieces of state and hooks.
@@ -23,7 +26,6 @@ function App() {
   const navigate = useNavigate()
 
   const handleLogIn = () => {
-    // Create new Google Auth provider.
     const provider = new GoogleAuthProvider();    
     // Calling firebase function function.
     signInWithPopup(auth, provider) 
@@ -34,17 +36,13 @@ function App() {
         setUser(user.displayName)
         // Notify the user with toast.
         toast.success(`Successfully logged in! ${user.email}` , {
-          autoClose: 5000,
+          autoClose: 3000,
+          hideProgressBar: true,
           pauseOnHover: false
         }) 
       }).catch((error) => {
-        // Taking code and message from error.
-        const { code, message } = error
-        // Notify the user with toast.
-        toast.error(`Error!, ${code, message}` , {
-          autoClose: 5000,
-          pauseOnHover: false
-        })
+        // Hanlding error. 
+        handleError(error)
       });
   }
 
@@ -56,24 +54,20 @@ function App() {
         setUser(null)
         // Notify the user with toast. 
         toast.success('Successfully logged out!' , {
-          autoClose: 5000,
+          autoClose: 3000,
+          hideProgressBar: true,
           pauseOnHover: false
         }) 
       }).catch((error) => {
-        // Taking code and message from error.
-        const { code, message } = error
-        // Notify the user with toast.
-        toast.error(`Error!, ${code, message}` , {
-          autoClose: 5000,
-          pauseOnHover: false
-        })
+        // Hanlding error.
+        handleError(error)
       });
   }
 
-  // Listening for firebase auth to change
+  // Listening for firebase auth to change.
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      // if there is a user, update piece of state
+      // if there is a user, update piece of state.
       setUser(user?.displayName)
     })
   }, [auth])
@@ -103,7 +97,7 @@ function App() {
               Log In
             </button>
           )}
-          <ToastContainer className='mt-16' />
+          <ToastContainer className='mt-16' limit={1} />
         </div>
       </header>
       <Routes>

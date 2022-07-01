@@ -6,73 +6,61 @@ import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 
 import { toast } from 'react-toastify';
 
-const EditEmployee = () => {
+import { handleError } from '../errors/errorHandling';
 
-  // Pieces of state and hooks
+
+const EditEmployee = () => {
+  // Pieces of state and hooks.
   const navigate = useNavigate()
   const params = useParams()
-  const [error, setError] = useState(false)
   const [docData, setDocData] = useState({
     name: '',
     location: '',
     position: '',
     age: 0,
   })
-
-  // Deconstruction of state docData
   const { name, location, position, age } = docData
 
-  // Retrieving of current employee's data
+  // Retrieving of current employee's data.
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, "employees", params.id), (doc) => {
+    onSnapshot(doc(db, "employees", params.id), (doc) => {
       if (doc.data()) {
         setDocData(doc.data())
       }
     });
-  }, [])
+  }, [params])
 
-  // Handling of data's update
   const handleEditEmployee = async e => {
-    e.preventDefault()
-    const updatedEmployee = {
-      name,
-      location,
-      position,
-      age
+    try {
+      e.preventDefault()
+      const updatedEmployee = {
+        name,
+        location,
+        position,
+        age
+      }
+      // Calling firebase function.
+      await setDoc(doc(db, "employees", params.id), updatedEmployee)
+      // Return to home.
+      navigate('/')
+      // Notify the user with toast.
+      toast.success('Successfully updated!', {
+        autoClose: 3000,
+        hideProgressBar: true,
+        pauseOnHover: false
+      })        
+    } catch (error) {
+      // Hanlding error.
+      handleError(error)
     }
-    await setDoc(doc(db, "employees", params.id), updatedEmployee)
-      .then(() => {
-        // Return to home
-        navigate('/')
-        // Notify the user with toast.
-        toast.success('Successfully updated!', {
-          autoClose: 5000,
-        })
-      })
-      .catch(err => {
-
-        // Taking code and message from error.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
-        // Notify the user with toast.
-        toast.error(`Error!, code: ${errorCode, errorMessage}`, {
-          autoClose: 10000,
-        })
-      }) 
   }
 
   // While data from firebase don't arrive, show no Data
   // CHANGE TO DO => check if the doc exists for wrong :id show no data while
   if(docData) {
     return (
-      <div className="w-full max-w-sm h-screen container mt-20 mx-auto">
-        <form onSubmit={handleEditEmployee}>          
-            {/* {error ? (
-              <div className="w-full mb-5 bg-red-300 text-red-500 font-bold py-2 px-4 rounded">
-                {error}
-              </div>
-            ) : null} */}
+      <div className="w-full max-w-sm h-screen mt-20 mx-auto">
+        <form onSubmit={handleEditEmployee}>
           <div className="w-full mb-5">
             <label 
               htmlFor="name" 

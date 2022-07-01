@@ -1,7 +1,7 @@
 // Functions from the SDKs
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import {  getAuth } from "firebase/auth";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -21,3 +21,4 @@ export const db = getFirestore(app)
 
 // Get auth instance
 export const auth = getAuth()
+

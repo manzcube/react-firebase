@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+// Firebase stuff
 import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
+// Toast
 import { toast } from 'react-toastify';
 
-const AddEmployee = () => {
+// Error boundaries
+import { handleError } from '../errors/errorHandling';
 
-  // Pieces of state and hooks
+
+const AddEmployee = () => {
+  // Pieces of state and hooks.
   const navigate = useNavigate()
   const [docData, setDocData] = useState({
     name: '',
@@ -16,41 +21,35 @@ const AddEmployee = () => {
     position: '',
     age: '',
   })
-
-  // Deconstruction of state docData
   const { name, location, position, age } = docData
 
   const handleAddEmployee = async e => {
-    e.preventDefault()
-    const newEmployee = {
-      name,
-      location,
-      position,
-      age
-    }
     try {
-      // Calling firebase function
+      e.preventDefault()
+      const newEmployee = {
+        name,
+        location,
+        position,
+        age
+      }
+      // Calling firebase function.
       await addDoc(collection(db, "employees"), newEmployee)
-      // Return to home
+      // Return to home.
       navigate('/')
       // Notify the user with toast.
       toast.success('Successfully created!' , {
-        autoClose: 5000,
+        autoClose: 3000,
+        hideProgressBar: true,
         pauseOnHover: false
       }) 
-    } catch (err) {
-       // Taking code and message from error.
-       const { code, message } = err
-       // Notify the user with toast.
-       toast.error(`Error!, ${code, message}` , {
-         autoClose: 5000,
-         pauseOnHover: false
-       })
+    } catch (error) {
+       // Hanlding error.
+       handleError(error)
     }     
   }
 
   return (
-    <div className="h-screen w-full max-w-sm container mt-20 mx-auto">
+    <div className="h-screen w-full max-w-sm mt-20 mx-auto">
       <form onSubmit={handleAddEmployee}>          
           
         <div className="w-full mb-5">

@@ -6,7 +6,7 @@ const NotFound = () => {
   return (
     <div className="flex justify-center h-screen p-5 mt-48">
       <div className="w-6/12">
-        <img src="https://i.ibb.co/ck1SGFJ/Group.png" />
+        <img src="https://i.ibb.co/ck1SGFJ/Group.png" alt='not found' className='ml-36' />
       </div>
       <div className="w-6/12 flex-col flex">
         <h1 className='text-white font-bold text-[8ch]'>Error 404!</h1>

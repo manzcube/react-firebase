@@ -14,7 +14,7 @@ const DeleteButton = (props) => {
   return (
     <button
         onClick={() => handleOnClick()}
-        className={`${deleteConfirmation ? 'bg-red-400 text-red-900' : 'bg-gray-300 text-gray-800'} hover:bg-gray-400  font-semibold py-2 px-4 rounded-full inline-flex items-center`}
+        className={`${deleteConfirmation ? 'bg-red-400 text-red-900' : 'bg-gray-300 text-gray-800'} font-semibold py-2 px-4 rounded-full inline-flex items-center`}
         title="Remove Employee"
     >
         {deleteConfirmation ? (

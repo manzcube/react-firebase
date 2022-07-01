@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { db } from '../firebase';
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
@@ -7,6 +7,8 @@ import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import Modal from '../components/Modal';
 import DeleteButton from '../components/DeleteButton';
+
+import { handleError } from '../errors/errorHandling';
 
 const Home = () => {
   // Pieces of state and hooks.
@@ -22,13 +24,8 @@ const Home = () => {
         // Updating pieces of state
         setEmployees(dataArray)
       } catch (error) {
-        // Taking code and message from error.
-        const { code, message } = error
-        // Notify the user with toast.
-        toast.error(`Error!, ${code, message}` , {
-          autoClose: 5000,
-          pauseOnHover: false
-        })
+        // Hanlding error boundaries
+        handleError(error)
       }
     }
     getData()
@@ -38,21 +35,18 @@ const Home = () => {
   const handleDeleteEmployee = async (id) => {
     try {
       // Calling firebase function.
-      await deleteDoc(doc(db, "employees", id))
-      window.location.reload() //Change this so the toast doesn't dissapear and put the modal on the process
+      await deleteDoc(doc(db, "employees", id))      
       // Notify the user with toast.
       toast.success('Successfully deleted!' , {
-        autoClose: 5000,
+        autoClose: 3000,
+        hideProgressBar: true,
         pauseOnHover: false
       }) 
+      // After notifying, refresh to show the changes.
+      setTimeout(() => window.location.reload(), 2500)
     } catch (error) {
-        // Taking code and message from error.
-        const { code, message } = error
-        // Notify the user with toast.
-        toast.error(`Error!, ${code, message}` , {
-          autoClose: 5000,
-          pauseOnHover: false
-        })
+      // Hanlding error.
+      handleError(error)
     }      
   }
 
@@ -91,7 +85,7 @@ const Home = () => {
               className='bg-gray-100'
               title="Edit Employee"
             >
-              <div className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold mr-3 py-2 px-4 rounded-full inline-flex items-center">
+              <div className="bg-gray-300 text-gray-800 font-semibold mr-3 py-2 px-4 rounded-full inline-flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-edit bg-gray-300"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
               </div>
             </Link>
@@ -99,7 +93,7 @@ const Home = () => {
           </div>
         </div>
       ))}
-      <Modal />
+      {/* <Modal /> */}
     </div>
   )
 }
